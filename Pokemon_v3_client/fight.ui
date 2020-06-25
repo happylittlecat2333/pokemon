@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Fight</class>
+ <widget class="QMainWindow" name="Fight">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label_gameType">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>10</y>
+      <width>161</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>25</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Game Type</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>80</y>
+      <width>641</width>
+      <height>401</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="4" column="5">
+      <widget class="QLabel" name="label_opPkmAttr">
+       <property name="text">
+        <string>Opponet blood:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" rowspan="4" colspan="2">
+      <widget class="QLabel" name="label_myPkmPic">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" rowspan="2">
+      <widget class="QProgressBar" name="progressBar_myBlood">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_10"/>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="6">
+      <layout class="QGridLayout" name="gridLayout_2"/>
+     </item>
+     <item row="2" column="3">
+      <layout class="QGridLayout" name="gridLayout_4"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_myPkmAttr">
+       <property name="text">
+        <string>My Blood:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4">
+      <layout class="QGridLayout" name="gridLayout_6"/>
+     </item>
+     <item row="5" column="3">
+      <layout class="QGridLayout" name="gridLayout_11"/>
+     </item>
+     <item row="1" column="2">
+      <layout class="QGridLayout" name="gridLayout_13"/>
+     </item>
+     <item row="0" column="3">
+      <layout class="QGridLayout" name="gridLayout_9"/>
+     </item>
+     <item row="5" column="5" rowspan="2">
+      <widget class="QProgressBar" name="progressBar_opBlood">
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <layout class="QGridLayout" name="gridLayout_7"/>
+     </item>
+     <item row="1" column="3">
+      <layout class="QGridLayout" name="gridLayout_8"/>
+     </item>
+     <item row="6" column="3">
+      <layout class="QGridLayout" name="gridLayout_12"/>
+     </item>
+     <item row="0" column="5" rowspan="4" colspan="2">
+      <widget class="QLabel" name="label_opPkmPic">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <layout class="QGridLayout" name="gridLayout_15">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_mySkill">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="7" column="5">
+      <widget class="QLabel" name="label_opSkill">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QPushButton" name="pushButton_select">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>500</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_giveOut">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>500</y>
+      <width>111</width>
+      <height>32</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_giveOut">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>510</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose one to give out</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_select_2">
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>550</y>
+      <width>112</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_giveOut_2">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>550</y>
+      <width>111</width>
+      <height>32</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_giveOut_2">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>560</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose one to give out</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
