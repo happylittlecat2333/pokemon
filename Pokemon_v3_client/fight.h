@@ -20,6 +20,7 @@
 #include "user.h"
 
 class User;
+class MainWindow;
 
 namespace Ui {
 class Fight;
@@ -30,8 +31,8 @@ class Fight : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Fight(QWidget *parent = nullptr);
-//    explicit Fight(QWidget *parent,unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex);
+    explicit Fight(QWidget *parent = 0);
+//    explicit Fight(QWidget *parent = 0,unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex);
 
 //    void fight();
     void fightBegin(unsigned int game_type, User* user,unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex);
@@ -42,6 +43,7 @@ public:
 
 private slots:
     void on_pushButton_select_clicked();
+    void recvData(unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex);
 
 signals:
     void setResult();

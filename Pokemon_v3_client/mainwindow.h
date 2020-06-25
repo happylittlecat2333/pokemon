@@ -9,6 +9,7 @@
 #include <QtDebug>
 #include <QListWidgetItem>
 
+
 #include "pokemon.h"
 #include "high_attack.h"
 #include "high_blood.h"
@@ -54,6 +55,9 @@ public:
     void giveOutPkm(User *user);
     void delay(int time);
 
+signals:
+    void sendData(unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex);
+
 private slots:
 
     void processPendingDatagrams();
@@ -94,6 +98,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_comboBox_giveOut_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     Pokemon *pokemon;
@@ -116,6 +122,7 @@ private:
 
     unsigned int pkmNum;
     unsigned int game_type;
+    unsigned int selectedIndex;
 
 };
 #endif // MAINWINDOW_H

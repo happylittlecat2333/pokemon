@@ -691,9 +691,13 @@ void MainWindow::on_pushButton_select_clicked()
     unsigned int pkm_index = ui->comboBox_giveOut->currentIndex();
     pkm_index = (selectedIndex + pkm_index) % user->getPkmNum();
     qDebug() << user->getPkmNum();
-    user->popPkmByIndex(pkm_index);
-    qDebug() << "after pop: " << user->getPkmNum();
-    QMessageBox::critical(this, "Pop pokemon", "pop pokemon complete", "OK");
+    if(user->getPkmNum() > 1){
+        user->popPkmByIndex(pkm_index);
+        qDebug() << "after pop: " << user->getPkmNum();
+        QMessageBox::critical(this, "Pop pokemon", "pop pokemon complete", "OK");
+    }
+    else
+        QMessageBox::critical(this, "Pop pokemon", "no pokemon, get new pokemon", "OK");
     updateUserPkm();
     setComboBoxValue(1);
     setComboBoxValue(0);

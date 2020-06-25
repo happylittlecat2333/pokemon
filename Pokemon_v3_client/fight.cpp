@@ -1,22 +1,32 @@
 #include "fight.h"
 #include "ui_fight.h"
+#include <QMessageBox>
+
 
 Fight::Fight(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Fight)
 {
+
     ui->setupUi(this);
     ui->label_giveOut->hide();
     ui->comboBox_giveOut->hide();
     ui->pushButton_select->hide();
     connect(this,SIGNAL(setResult()),this->parentWidget(),SLOT(recResult()));
 
+//    fightBegin(game_type, user,userPkmIndex, opponent, opPkmIndex);
+
+}
+
+void Fight::recvData(unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex){
+    qDebug() << "recvData";
+    fightBegin(game_type, user,userPkmIndex, opponent, opPkmIndex);
 }
 
 void Fight::fightBegin(unsigned int game_type, User* user, unsigned int userPkmIndex, User* opponent, unsigned int opPkmIndex)
 {
-    ui->setupUi(this);
-    this->show();
+//    ui->setupUi(this);
+//    this->show();
 //    connect(ui->pushButton_select, SIGNAL(pressed()), this, SLOT(on_pushButton_select_clicked()));
     ui->label_giveOut->hide();
     ui->comboBox_giveOut->hide();
