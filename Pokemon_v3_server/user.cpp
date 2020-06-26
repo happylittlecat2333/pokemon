@@ -37,6 +37,9 @@ void User::setUser(QDataStream &dsIn){  //设置用户的pokemon信息，每次a
 void User::sendAllPkmAttr(QDataStream &dsOut)
 {
     dsOut << this->username;
+    dsOut << this->win;
+    dsOut << this->lose;
+    dsOut << allPkmAttr.length();
     for(int i=0; i<allPkmAttr.length(); i++){
         dsOut << allPkmAttr[i]->name;
         dsOut << allPkmAttr[i]->level;

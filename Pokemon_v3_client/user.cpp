@@ -38,6 +38,9 @@ void User::setUser(QDataStream &dsIn){  //加载pokemon数据，每次append一�
 void User::sendAllPkmAttr(QDataStream &dsOut)
 {
     dsOut << this->username;
+    dsOut << this->win;
+    dsOut << this->lose;
+    qDebug() << "send pkm: " << this->win << " " << this->lose;
     for(int i=0; i<allPkmAttr.length(); i++){
         dsOut << allPkmAttr[i]->name;
         dsOut << allPkmAttr[i]->level;
@@ -68,6 +71,26 @@ void User::setUser(Pkm** allPkm, unsigned int pkmNum)   //从login中传递的�
         tmp->skill = allPkm[i]->skill;
         allPkmAttr.append(tmp);
     }
+}
+
+QString User::getUserBadget()
+{
+    QString s;
+    unsigned int high_rank_num = 0;
+    for(QList<Pkm*>::iterator i=allPkmAttr.begin(); i!=allPkmAttr.end(); ++i){
+        if((*i)->level == 15) high_rank_num++;
+    }
+    pkmNum = getPkmNum();
+    s = QString::number(pkmNum)+" pokemon\n";
+    s += "pokemon_badget: ";
+    if(pkmNum <= 3) s += "Copper";
+    else if(pkmNum <= 5) s += "Silver";
+    else s += "Gold";
+    s += "\nhight_rank_badegt: ";
+    if(high_rank_num <= 3) s += "Copper";
+    else if(high_rank_num <= 5) s += "Silver";
+    else s += "Gold";
+    return s;
 }
 
 

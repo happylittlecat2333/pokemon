@@ -59,6 +59,10 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_pokemon_clicked();
+
+    void on_pushButton_user_clicked();
+
 private:
     Ui::MainWindow *ui;
     Pokemon *pokemon;

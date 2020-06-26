@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 //         query.exec("create table student (id int primary key, namevchar)");
         query.exec("drop table users");
         query.exec("drop table pokemon");
-        query.exec("create table users (username vchar primary key, password vchar)");
+        query.exec("create table users (username vchar primary key, password vchar, win int, lose int)");
         query.exec("CREATE TABLE pokemon (  \
                      id     int,    \
                      user	vchar , \
@@ -90,10 +90,13 @@ void MainWindow::processPendingDatagrams()
             query.exec("select * from users where username=\"" + username + "\";");
             if(query.next()) dsOut << NAME_EXIST;
             else{
-                query.exec ("insert into users values(\""+username+"\",\""+password+"\");");
+                query.exec ("insert into users values(\""+username+"\",\""+password+"\", 0, 0);");
                 qDebug() << "SIGN_UP" << username << password;
                 createPokemon(username, 1);
                 dsOut << SIGN_UP_SUCCESS;
+                query.exec("select * from users where user=\""+username+"\";"); //用户胜负情况
+                dsOut << query.value(2).toUInt();
+                dsOut << query.value(3).toUInt();
                 sendPekemon(dsOut, username);
                 appendUserFromSql(username);
             }
@@ -109,6 +112,9 @@ void MainWindow::processPendingDatagrams()
                     dsOut << PWD_ERROR;
                 else{
                     dsOut << SIGN_IN_SUCESS;
+                    query.exec("select * from users where user=\""+username+"\";"); //用户胜负情况
+                    dsOut << query.value(2).toUInt();
+                    dsOut << query.value(3).toUInt();
                     sendPekemon(dsOut, username);
                     appendUserFromSql(username);
                 }
@@ -131,6 +137,7 @@ void MainWindow::processPendingDatagrams()
         }
         else if(log_type == ONLINE_USER){
             dsIn >> port;
+            qDebug() << "reveive ONLINE_USER\n";
             sendOnlineUser(port);
         }
         else if(log_type == VIRTUAL_PKM){
@@ -174,8 +181,13 @@ void MainWindow::appendUserFromSql(QString username)    //在线用户增加，�
        tmp_pkm->speed = query.value(8).toUInt();
        tmp_pkm->kind = query.value(9).toUInt();
        tmp_pkm->skill = query.value(10).toUInt();
+
        tmp_user->appendPkm(tmp_pkm);
     }
+
+    query.exec("select * from users where username=\""+username+"\";"); //用户胜负情况
+    tmp_user->win = query.value(2).toUInt();
+    tmp_user->lose = query.value(3).toUInt();
     online_user.append(tmp_user);
     qDebug() << tmp_user->getUsername();
     qDebug() << "online user count:" << online_user.length();
@@ -186,6 +198,8 @@ void MainWindow::sendPekemon(QDataStream& dsOut, QString user)  //发送user的�
 {
 
     QSqlQuery query;
+//    query.exec("select count(user) from pokemon where user=\""+user+"\";");
+
     query.exec ("select * from pokemon where user=\""+user+"\";");
 //    qDebug() << "send";
     while(query.next ())
@@ -203,12 +217,18 @@ void MainWindow::sendAllUser(unsigned int port) //从数据库返回所有用户
 {
     QByteArray dataOut;
     QDataStream Out(&dataOut,QIODevice::ReadWrite);
-    QSqlQuery query;
+    QSqlQuery query, tmp_query;
     Out << ALL_USER;
     query.exec("select * from users");
     while(query.next()) {
         Out << query.value(0).toString();   //先发用户名
 //        qDebug() << query.value(0).toString();
+        Out << query.value(2).toUInt(); //win 数量
+        Out << query.value(3).toUInt(); //lose 数量
+        unsigned int pokemon_num =0;
+        tmp_query.exec ("select * from pokemon where user=\""+query.value(0).toString()+"\";");
+        while(tmp_query.next()) pokemon_num++;
+        Out << pokemon_num;
         sendPekemon(Out, query.value(0).toString());    //再发所有精灵
     }
     client->writeDatagram(dataOut.data(), dataOut.size(), QHostAddress::Broadcast, port);
@@ -218,12 +238,26 @@ void MainWindow::sendOnlineUser(unsigned int port)  //从online_user中返回数
 {
     QByteArray dataOut;
     QDataStream Out(&dataOut,QIODevice::ReadWrite);
-    QSqlQuery query;
+    QSqlQuery query, tmp_query;
     Out << ONLINE_USER;
     qDebug() << "send online user";
     qDebug() << "online user count:" << online_user.length();
     for(int i=0; i<online_user.length(); i++){
-        online_user[i]->sendAllPkmAttr(Out);
+        unsigned int pokemon_num = 0;
+        query.exec("select * from users where username=\"" + online_user[i]->getUsername() + "\";");
+        qDebug() << online_user[i]->getUsername();
+
+        if(query.first()){
+            Out << query.value(0).toString();   //先发用户名
+            Out << query.value(2).toUInt(); //win 数量
+            Out << query.value(3).toUInt(); //lose 数量
+        }
+        qDebug() << "send online: " << query.value(2).toUInt() <<" "<<query.value(3).toUInt();
+        tmp_query.exec ("select * from pokemon where user=\""+online_user[i]->getUsername()+"\";");
+        while(tmp_query.next()) pokemon_num++;
+        Out << pokemon_num;
+        sendPekemon(Out, online_user[i]->getUsername());    //再发所有精灵
+//        online_user[i]->sendAllPkmAttr(Out);
     }
     client->writeDatagram(dataOut.data(), dataOut.size(), QHostAddress::Broadcast, port);
 }
@@ -285,6 +319,13 @@ void MainWindow::updateUserPkm(QDataStream& dsIn, QString username) //更新用�
     QString user_name;
     dsIn >> user_name;
     user->setUsername(user_name);
+    dsIn >> user->win;
+    dsIn >> user->lose;
+//    query.exec("update users set win="+user->win+", lose="+user->lose+" where username=\""+user->getUsername()+"\";");
+    QString sqlString=tr("update users set win=%1, lose=%2 where username='%3';").  //更新胜负情况
+            arg(user->win).arg(user->lose).arg(user->getUsername());
+    query.exec(sqlString);
+
     user->deleteAllPkm();
     qDebug() << "updating " << user_name;
     while(!dsIn.atEnd())    //把传来的数据dsIn赋值到user中（pokemon信息）
@@ -322,4 +363,22 @@ void MainWindow::on_pushButton_3_clicked()
 void MainWindow::on_pushButton_clicked()
 {
     this->~MainWindow();
+}
+
+void MainWindow::on_pushButton_pokemon_clicked()
+{
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    model->setQuery("select * from pokemon");
+    QTableView *view = new QTableView;
+    view->setModel(model);
+    view->show();
+}
+
+void MainWindow::on_pushButton_user_clicked()
+{
+    QSqlQueryModel *model = new QSqlQueryModel(this);
+    model->setQuery("select * from users");
+    QTableView *view = new QTableView;
+    view->setModel(model);
+    view->show();
 }

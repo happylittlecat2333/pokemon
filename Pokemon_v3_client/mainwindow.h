@@ -71,16 +71,13 @@ private slots:
 
     void RecvPkmID(int);
 
-
-
-
     void on_pushButton_allUser_clicked();
 
-    void on_pushButton_myPkm_clicked();
-
-    void on_pushButton_LogOut_clicked();
+//    void on_pushButton_myPkm_clicked();
 
     void on_pushButton_onlineUser_clicked();
+
+    void on_pushButton_LogOut_clicked();
 
     void on_comboBox_opPkm_currentIndexChanged(int index);
 

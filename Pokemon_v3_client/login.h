@@ -30,6 +30,8 @@ public:
     QString getUsername(){return username;};
     unsigned int getPkmNum(){return pkmNum;};
     ~Login();
+    unsigned int win;
+    unsigned int lose;
 
 private slots:
     void processPendingDatagrams();
@@ -50,8 +52,6 @@ private:
     Pkm *attrAll[20];
     unsigned int port;
     unsigned int pkmNum=0;
-
-
 
 
 };

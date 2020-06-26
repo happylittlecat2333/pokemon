@@ -30,11 +30,13 @@ public:
     void deleteAllPkm(){allPkmAttr.clear();};
     int getPkmNum(){return allPkmAttr.length();};
     Pkm* getPkmByIndex(unsigned int index){return allPkmAttr[index];};
-
+    unsigned int win;
+    unsigned int lose;
     ~User();
 private:
     QList<Pkm*> allPkmAttr; //每个用户的所有pokemon
     QString username;
+
 
 };
 

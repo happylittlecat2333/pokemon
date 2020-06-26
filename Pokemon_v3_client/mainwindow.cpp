@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent, Login *login)
 
     allPkmAttr = login->getAllPkm();
     username = login->getUsername();
+
 //    Users.clear();
     mode = 0;
 
@@ -25,8 +26,11 @@ MainWindow::MainWindow(QWidget *parent, Login *login)
     admin = new User;
     user->setUser(allPkmAttr,pkmNum);
     user->setUsername(username);
+    user->win = login->win;
+    user->lose = login->lose;
     admin->setUsername("admin");
 
+    qDebug() << "from login win/lose: " << user->win;
 
     server = new QUdpSocket(this); //创建一个QUdpSocket类对象，负责接收
     client = new QUdpSocket(this);
@@ -57,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent, Login *login)
         this->processPendingDatagrams ();
     }
     else qDebug() << "time out";
-
 
     setComboBoxValue(1);
     setComboBoxValue(0);
@@ -151,9 +154,15 @@ void MainWindow::processPendingDatagrams()
             while(!dsIn.atEnd()) {
                 User *tmp_user  = new User;
                 dsIn >> username;
+                dsIn >> tmp_user->win;
+                dsIn >> tmp_user->lose;
                 qDebug() << username;
+                qDebug() << tmp_user->win;
+                qDebug() << tmp_user->lose;
                 tmp_user->setUsername(username);
-                for(int i=0;i<3;i++){
+                unsigned int pokemon_num = 0;
+                dsIn >> pokemon_num;
+                for(unsigned int i=0;i<pokemon_num;i++){
                     tmp_user->setUser(dsIn);
                 }
                 this->Users.append(tmp_user);   //所有用户的信息
@@ -166,9 +175,13 @@ void MainWindow::processPendingDatagrams()
             while(!dsIn.atEnd()) {
                 User *tmp_user  = new User;
                 dsIn >> username;
+                dsIn >> tmp_user->win;
+                dsIn >> tmp_user->lose;
                 qDebug() << username;
                 tmp_user->setUsername(username);
-                for(int i=0;i<3;i++){
+                unsigned int pokemon_num = 0;
+                dsIn >> pokemon_num;
+                for(unsigned int i=0;i<pokemon_num;i++){
                     tmp_user->setUser(dsIn);
                 }
                 this->online_user.append(tmp_user);
@@ -188,8 +201,6 @@ void MainWindow::processPendingDatagrams()
 //            setComboBoxValue(0);
 
         }
-
-
     }
 }
 
@@ -256,8 +267,27 @@ void MainWindow::updateUserPkm()    //更新user自己的pokemon信息
 void MainWindow::on_listWidget_AllUser_currentRowChanged(int currentRow)
 {
     if(currentRow >= 1){
-    if(mode==1 && currentRow<Users.length()) ui->label_username->setText (tr("%1's Pokemon").arg(this->Users[currentRow-1]->getUsername()));
-    else if(mode==2 && currentRow<online_user.length()) ui->label_username->setText (tr("%1's Pokemon").arg(this->online_user[currentRow-1]->getUsername()));
+    if(mode==1 && currentRow<=Users.length()){
+//        ui->label_username->setText (tr("%1's Pokemon").arg(this->Users[currentRow-1]->getUsername()));
+        float win = this->Users[currentRow-1]->win;
+        float lose = this->Users[currentRow-1]->lose;
+        float win_rate = win / (win + lose);
+        ui->label_user_winRate->setText (tr("win: %1\nloss: %2\nwin_rate: %3")
+                                         .arg(win).arg(lose).arg(win_rate));
+        ui->label_user_badget->setText(this->Users[currentRow-1]->getUserBadget());
+    }
+
+    else if(mode==2 && currentRow<=online_user.length()){
+//        ui->label_username->setText (tr("%1's Pokemon").arg(this->online_user[currentRow-1]->getUsername()));
+        float win = this->online_user[currentRow-1]->win;
+        float lose = this->online_user[currentRow-1]->lose;
+        float win_rate = win / (win + lose);
+        ui->label_user_winRate->setText (tr("win: %1\nloss: %2\nwin_rate: %3")
+                                         .arg(win).arg(lose).arg(win_rate));
+        ui->label_user_badget->setText(this->online_user[currentRow-1]->getUserBadget());
+    }
+
+
 //    ui->radioButton_1->setChecked (true);
 //    ui->label_allAttr->setText (this->getPkmAttr(0));
     }
@@ -276,28 +306,28 @@ void MainWindow::on_pushButton_allUser_clicked()    //根据所有用户Users，
         this->processPendingDatagrams ();
         qDebug() << "all push";
         ui->listWidget_AllUser->clear ();
-        ui->listWidget_AllUser->addItem ("Username");
+        ui->listWidget_AllUser->addItem ("Username: ");
         qDebug() << Users.length();
 
         for(int i=0;i<Users.length();i++)
             ui->listWidget_AllUser->addItem (tr("%1").
                                           arg (this->Users[i]->getUsername()));
         ui->listWidget_AllUser->setCurrentRow (1);
-        ui->label_username->setText (tr("%1's Pokemon").arg(this->Users[0]->getUsername()));
-
+//        ui->label_username->setText (tr("%1's Pokemon").arg(this->Users[0]->getUsername()));
+        ui->label_allUser->setText("All User");
     }
     else
          QMessageBox::critical (this,"Get Data Failed","Connect Failed","OK");
 
 }
 
-void MainWindow::on_pushButton_myPkm_clicked()
-{
-    mode = 0;
-    ui->label_username->setText("My Pokemon");
-//    ui->radioButton_1->setChecked(true);
-//    ui->label_allAttr->setText(this->getPkmAttr(0));
-}
+//void MainWindow::on_pushButton_myPkm_clicked()
+//{
+//    mode = 0;
+//    ui->label_username->setText("My Pokemon");
+////    ui->radioButton_1->setChecked(true);
+////    ui->label_allAttr->setText(this->getPkmAttr(0));
+//}
 
 
 void MainWindow::on_pushButton_LogOut_clicked()
@@ -322,14 +352,14 @@ void MainWindow::on_pushButton_onlineUser_clicked() //根据所有在线用户on
         this->processPendingDatagrams ();
         qDebug() << "all push online";
         ui->listWidget_AllUser->clear ();
-        ui->listWidget_AllUser->addItem ("Username");
+        ui->listWidget_AllUser->addItem ("Username:");
         qDebug() << online_user.length();
         ui->label_allUser->setText("Online User");
         for(int i=0;i<online_user.length();i++)
             ui->listWidget_AllUser->addItem (tr("%1").
                                           arg (this->online_user[i]->getUsername()));
         ui->listWidget_AllUser->setCurrentRow (1);
-        ui->label_username->setText (tr("%1's Pokemon").arg(this->online_user[0]->getUsername()));
+//        ui->label_username->setText (tr("%1's Pokemon").arg(this->online_user[0]->getUsername()));
 
     }
     else
@@ -468,13 +498,17 @@ void MainWindow::fightBegin(unsigned int game_type, User* user, unsigned int use
         ui->label_gameType->setText("Upgrade Game");
         IsWin = fightProgress(user, userPkmIndex, opponent, opPkmIndex);
         if(IsWin){
+            user->win++;
+            qDebug() << "user win++: " << user->win;
             user->addExperience(userPkmIndex, opponent->getAllPkmAttr(opPkmIndex)->level);
             qDebug() << opponent->getAllPkmAttr(opPkmIndex)->level;
             if(tmp_level != user->getAllPkmAttr(userPkmIndex)->level)
                 QMessageBox::information (this,"Pokemon Upgrade", "Level Up : " + QString::number(user->getAllPkmAttr(userPkmIndex)->level),"OK");
         }
-        else
+        else{
+            user->lose++;
             QMessageBox::information (this,"Game Over", "return to menu","OK");
+        }
 //        hideGiveOut();
 
         setComboBoxValue(1);
@@ -486,6 +520,7 @@ void MainWindow::fightBegin(unsigned int game_type, User* user, unsigned int use
         ui->label_gameType->setText("Duel Game");
         IsWin = fightProgress(user, userPkmIndex, opponent, opPkmIndex);
         if(IsWin){
+            user->win++;
             user->addExperience(userPkmIndex, opponent->getAllPkmAttr(opPkmIndex)->level);
             user->appendPkm(opponent->getAllPkmAttr(opPkmIndex));
             qDebug() << "append Pkm success";
@@ -496,6 +531,7 @@ void MainWindow::fightBegin(unsigned int game_type, User* user, unsigned int use
             setComboBoxValue(0);
         }
         else{
+            user->lose++;
             showGiveOut();
             QMessageBox::information (this,"Pokemon Loss", "choose one pokemon to give out","OK");
             giveOutPkm(user);
@@ -655,19 +691,22 @@ void MainWindow::giveOutPkm(User *user)
 //    ui->label_giveOut->show();
 //    ui->pushButton_select->show();
     int pkmNum = user->getPkmNum();
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 rand_num(seed);	 // 大随机数
     ui->comboBox_giveOut->clear();
     if(pkmNum >= 3){
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::mt19937 rand_num(seed);	 // 大随机数
         this->selectedIndex = rand_num() % pkmNum;
         for(int i=0, p=selectedIndex;i<3;i++){
             ui->comboBox_giveOut->addItem(user->getAllPkmAttr(p)->name);
             p = (p + 1) % pkmNum;
         }
     }
-    else
+    else{
         for(int i=0;i<pkmNum;i++)
             ui->comboBox_giveOut->addItem(user->getAllPkmAttr(i)->name);
+        this->selectedIndex = 0;
+        }
+
 //    ui->comboBox_giveOut->show();
     ui->comboBox_giveOut->setCurrentIndex(0);
     ui->label_myPkmAttr->setText(this->getPkmAttr(selectedIndex));
@@ -691,9 +730,13 @@ void MainWindow::on_pushButton_select_clicked()
     unsigned int pkm_index = ui->comboBox_giveOut->currentIndex();
     pkm_index = (selectedIndex + pkm_index) % user->getPkmNum();
     qDebug() << user->getPkmNum();
-    user->popPkmByIndex(pkm_index);
-    qDebug() << "after pop: " << user->getPkmNum();
-    QMessageBox::critical(this, "Pop pokemon", "pop pokemon complete", "OK");
+    if(user->getPkmNum() > 1){
+        user->popPkmByIndex(pkm_index);
+        qDebug() << "after pop: " << user->getPkmNum();
+        QMessageBox::critical(this, "Pop pokemon", "pop pokemon complete", "OK");
+    }
+    else
+        QMessageBox::critical(this, "Pop pokemon", "no pokemon, get new pokemon", "OK");
     updateUserPkm();
     setComboBoxValue(1);
     setComboBoxValue(0);

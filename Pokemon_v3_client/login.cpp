@@ -50,6 +50,8 @@ void Login::processPendingDatagrams()
     qDebug() << datagIn;
     if(log_type == SIGN_IN_SUCESS){
         QMessageBox::information (this,"Sign In","Login Success","OK");
+        dsIn >> win;
+        dsIn >> lose;
         for(int i=0; !dsIn.atEnd(); i++)
             setAttrAll(dsIn, i);
         server->close();
@@ -60,6 +62,8 @@ void Login::processPendingDatagrams()
     }
     else if(log_type == SIGN_UP_SUCCESS){
         QMessageBox::information (this,"Sign Up","Sign Up Success","OK");
+        dsIn >> win;
+        dsIn >> lose;
         for(int i=0; i<3; i++)
             setAttrAll(dsIn, i);
         server->close();

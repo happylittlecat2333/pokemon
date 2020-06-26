@@ -37,7 +37,9 @@ public:
     void addExperience(unsigned int index, unsigned int opLevel);
     void levelUp(unsigned int index);
     void popPkmByIndex(unsigned int index){allPkmAttr.removeAt(index); qDebug() << "delete" << index;pkmNum=getPkmNum();};
-
+    QString getUserBadget();
+    unsigned int win;
+    unsigned int lose;
     ~User();
 private:
     QList<Pkm*> allPkmAttr;
