@@ -25,8 +25,8 @@ class Login : public QDialog
 
 public:
     explicit Login(QWidget *parent = 0);
-    void setAttrAll(QDataStream& dsIn, unsigned int num);
-    Pkm **getAllPkm(){return attrAll;};
+    void setAttrAll(QDataStream& dsIn, unsigned int num); //加载pokemon信息
+    Pkm **getAllPkm(){return attrAll;}; //返回所有pokemon信息
     QString getUsername(){return username;};
     unsigned int getPkmNum(){return pkmNum;};
     ~Login();
@@ -34,13 +34,13 @@ public:
     unsigned int lose;
 
 private slots:
-    void processPendingDatagrams();
+    void processPendingDatagrams(); //处理传来的数据
 
-    void on_pushButton_signIn_clicked();
+    void on_pushButton_signIn_clicked(); //登录事件处理
 
-    void on_pushButton_signUp_clicked();
+    void on_pushButton_signUp_clicked(); //注册事件处理
 
-    void on_pushButton_clicked();
+    void on_pushButton_clicked(); //退出
 
 private:
     Ui::Login *ui;
@@ -49,7 +49,7 @@ private:
     QUdpSocket *client;
 
     QString username;
-    Pkm *attrAll[20];
+    Pkm *attrAll[20];   //所有pokemon信息
     unsigned int port;
     unsigned int pkmNum=0;
 

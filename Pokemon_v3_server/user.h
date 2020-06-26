@@ -21,7 +21,7 @@ class User : public QObject
      Q_OBJECT
 public:
     User();
-    void setUser(QDataStream& dsIn);
+    void setUser(QDataStream& dsIn);    //根据传来的数据载入到用户中
     void setUsername(QString username){this->username = username;};
     void appendPkm(Pkm* pkm){allPkmAttr.append(pkm);};
     QString getUsername(){return username;};
@@ -33,11 +33,10 @@ public:
     unsigned int win;
     unsigned int lose;
     ~User();
+
 private:
-    QList<Pkm*> allPkmAttr; //每个用户的所有pokemon
+    QList<Pkm*> allPkmAttr; //用户的所有pokemon信息
     QString username;
-
-
 };
 
 #endif // USER_H

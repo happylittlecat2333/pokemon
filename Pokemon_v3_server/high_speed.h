@@ -13,7 +13,7 @@ class high_speed : public Pokemon
 public:
     high_speed(SKILL skill);
     unsigned int Attack();
-    void levelUp();
+    void levelUp();     //重写不同种类的精灵的升级方式
     ~high_speed(){};
 };
 

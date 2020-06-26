@@ -6,6 +6,7 @@ User::User()
     allPkmAttr.clear();
 }
 
+
 User::~User()
 {
     qDebug() << "deleting User";
@@ -14,33 +15,28 @@ User::~User()
     }
 }
 
-void User::setUser(QDataStream &dsIn){  //加载pokemon数据，每次append一个pokemon数据
-//    while(!dsIn.atEnd()){
-        Pkm *tmp = new Pkm;
-        dsIn >> tmp->name;
-//        qDebug() << tmp->name;
-        dsIn >> tmp->level;
-//        qDebug() << tmp->level;
-        dsIn >> tmp->experience;
-        dsIn >> tmp->attack;
-//        qDebug() << tmp->attack;
-        dsIn >> tmp->blood;
-        dsIn >> tmp->defense;
-        dsIn >> tmp->speed;
-        dsIn >> tmp->kind;
-        dsIn >> tmp->skill;
-//        qDebug() << "setUser";
-        allPkmAttr.append(tmp);
-//    }
+
+void User::setUser(QDataStream &dsIn)  //设置用户的pokemon信息，每次append一个pokemon
+{
+    Pkm *tmp = new Pkm;
+    dsIn >> tmp->name;
+    dsIn >> tmp->level;
+    dsIn >> tmp->experience;
+    dsIn >> tmp->attack;
+    dsIn >> tmp->blood;
+    dsIn >> tmp->defense;
+    dsIn >> tmp->speed;
+    dsIn >> tmp->kind;
+    dsIn >> tmp->skill;
+    allPkmAttr.append(tmp);
 }
 
 
-void User::sendAllPkmAttr(QDataStream &dsOut)
+void User::sendAllPkmAttr(QDataStream &dsOut)   //更新用户的所有信息
 {
     dsOut << this->username;
     dsOut << this->win;
     dsOut << this->lose;
-    qDebug() << "send pkm: " << this->win << " " << this->lose;
     for(int i=0; i<allPkmAttr.length(); i++){
         dsOut << allPkmAttr[i]->name;
         dsOut << allPkmAttr[i]->level;
@@ -52,11 +48,10 @@ void User::sendAllPkmAttr(QDataStream &dsOut)
         dsOut << allPkmAttr[i]->kind;
         dsOut << allPkmAttr[i]->skill;
     }
-    qDebug() << "send online user num:" << allPkmAttr.length();
-    qDebug() << "send online pkm" << this->username;
 }
 
-void User::setUser(Pkm** allPkm, unsigned int pkmNum)   //从login中传递的数据，加载到user对象中
+
+void User::setUser(Pkm** allPkm, unsigned int pkmNum)   //从login中传递的数据，加载到用户中
 {
     for(unsigned int i=0;i<pkmNum;i++){
         Pkm *tmp = new Pkm;
@@ -73,7 +68,8 @@ void User::setUser(Pkm** allPkm, unsigned int pkmNum)   //从login中传递的�
     }
 }
 
-QString User::getUserBadget()
+
+QString User::getUserBadget()   //返回用户宠物个数徽章、高级精灵个数徽章
 {
     QString s;
     unsigned int high_rank_num = 0;
@@ -86,6 +82,7 @@ QString User::getUserBadget()
     if(pkmNum <= 3) s += "Copper";
     else if(pkmNum <= 5) s += "Silver";
     else s += "Gold";
+
     s += "\nhight_rank_badegt: ";
     if(high_rank_num <= 3) s += "Copper";
     else if(high_rank_num <= 5) s += "Silver";
@@ -94,7 +91,7 @@ QString User::getUserBadget()
 }
 
 
-QString User::getPkmAttrByIndex(unsigned int index)
+QString User::getPkmAttrByIndex(unsigned int index) //返回pokemon信息
 {
     Pkm* tmp = this->allPkmAttr[index];
     QString all;
@@ -109,36 +106,40 @@ QString User::getPkmAttrByIndex(unsigned int index)
     return all;
 }
 
-int User::attackOpponent(unsigned int index)
-{
-    Pkm* pkm = this->allPkmAttr[index];
 
+int User::attackOpponent(unsigned int index)    //用户的一个精灵发出攻击，返回攻击伤害
+{
     int attackValue = 0;
 
-    qsrand(QTime(0,0,0,0).msecsTo((QTime::currentTime()))); //生成随机种子
-    unsigned int p = qrand() % 10 + 1;  //p:1~10
-    if(p <= 3){  //0.3的几率出技能
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();    //随机种子
+    std::mt19937 rand_num(seed);
+    unsigned int p = rand_num() % 10 + 1;  //p的范围1~10
+    if(p <= 3)                  //0.3的几率出技能
         attackValue = -1;
-    }
-    else if(p >= 4 && p <=10 )   //0.7的几率出普通攻击
-        attackValue = pkm->attack;
+    else if(p >= 4 && p <=10)   //0.7的几率出普通攻击
+        attackValue = this->allPkmAttr[index]->attack;
+
     return attackValue;
 }
 
-void User::addExperience(unsigned int index, unsigned int opLevel)
+
+void User::addExperience(unsigned int index, unsigned int opLevel)  //用户的一个pokemon增加经验值（根据对方精灵的等级）
 {
     unsigned int add_experience = 50 * opLevel * opLevel;
-    qDebug() << "add expereince " << add_experience;
+    unsigned int current_level = this->allPkmAttr[index]->level;
     allPkmAttr[index]->experience += add_experience;
-    unsigned int experienceAll_level = 100 * this->allPkmAttr[index]->level * this->allPkmAttr[index]->level; //此level下最大经验值，超过就升级了
-    while(this->allPkmAttr[index]->level < MAX_LEVEL && this->allPkmAttr[index]->experience >= experienceAll_level) //循环判断等级
+
+    unsigned int experienceAll_level = 100 * current_level * current_level; //此level下最大经验值，超过就升级了
+    while(current_level < MAX_LEVEL && this->allPkmAttr[index]->experience >= experienceAll_level) //循环判断等级
     {
         levelUp(index);  //level升级（+1）
-        experienceAll_level = 100 * this->allPkmAttr[index]->level * this->allPkmAttr[index]->level;
+        current_level = this->allPkmAttr[index]->level;
+        experienceAll_level = 100 * current_level * current_level;
     }
 }
 
-void User::levelUp(unsigned int index)
+
+void User::levelUp(unsigned int index)  //用户的pokemon升级
 {
     Pkm* tmp = allPkmAttr[index];
     tmp->level++;

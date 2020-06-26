@@ -1,6 +1,7 @@
 #include "pokemon.h"
 
-QString Pokemon::getAllValue(){
+QString Pokemon::getAllValue()
+{
     QString all;
     all = all + "name:" + name;
     all = all + "\nlevel:" + QString::number(level);
@@ -13,14 +14,16 @@ QString Pokemon::getAllValue(){
     return all;
 }
 
-void Pokemon::setValue(unsigned int base_attack, unsigned int base_blood, unsigned int base_defense, unsigned int base_speed){
+void Pokemon::setValue(unsigned int base_attack, unsigned int base_blood, unsigned int base_defense, unsigned int base_speed)
+{
     attack = base_attack;
     blood = base_blood;
     defense = base_defense;
     speed = base_speed;
 }
 
-void Pokemon::experienceUp(unsigned int value){ //增加经验
+void Pokemon::experienceUp(unsigned int value)  //增加经验
+{
     experience += value;
     unsigned int experienceAll_level = 100 * level * level; //此level下最大经验值，超过就升级了
     while(level < MAX_LEVEL && experience >= experienceAll_level) //循环判断等级
@@ -30,12 +33,14 @@ void Pokemon::experienceUp(unsigned int value){ //增加经验
     }
 }
 
-void Pokemon::setLevel(unsigned int set_level){ //升级到指定等级
+void Pokemon::setLevel(unsigned int set_level)  //升级到指定等级
+{
     unsigned int addExperience = 100 * set_level * set_level - this->experience - 1;
     this->experienceUp(addExperience);
 }
 
-Pkm* Pokemon::getAttr(){    //返回pokemon信息
+Pkm* Pokemon::getAttr() //返回pokemon信息
+{
     Pkm* attr = new Pkm();
 
     attr->name=this->name;
@@ -50,4 +55,3 @@ Pkm* Pokemon::getAttr(){    //返回pokemon信息
 
     return attr;
 }
-

@@ -6,6 +6,8 @@
 #include <QWidget>
 #include <QTime>
 #include <QString>
+#include <chrono>
+#include <random>
 
 #include <iostream>
 #include <string>
@@ -15,7 +17,7 @@
 #define MAX_LEVEL 15
 #define BASE 100
 
-struct Pkm
+struct Pkm  //pokemon信息
 {
     QString name;
     unsigned int level;
@@ -29,17 +31,16 @@ struct Pkm
     unsigned int skill;
 };
 
-enum SKILL
+enum SKILL  //pokemon的特殊技能
 {
     fire_attack,
-//    light_attack,
     water_attack,
     defense_attack,
     double_attack,
     normal_attack   //所有精灵都有
 };
 
-enum KIND
+enum KIND   //pokemon的所有种类
 {
     HIGH_ATTACK,
     HIGH_BLOOD,
@@ -47,34 +48,26 @@ enum KIND
     HIGH_SPEED
 };
 
-//const QList<QString> POKEMONNAME={
-//    "Charizard", //喷火龙(fire_attack; high_attack)
-////    "Pikachu",   //皮卡丘(light_attack)
-//    "Blastoise", //水箭龟(water_attack; high_blood)
-//    "Snorlax",   //卡比兽(defense_attack; high_defense)
-//    "Duduo",     //嘟嘟(double_attack; high_speed)
-//};
-
-const QList<QString> POKEMONNAME={
-    "Charmander",  //小火龙
+const QList<QString> POKEMONNAME={  //所有pokemon的名字（特殊技能；属性）
+    "Charmander",   //小火龙
     "Charmeleon",   //火恐龙
-    "Charizard", //喷火龙(fire_attack; high_attack)
+    "Charizard",    //喷火龙(fire_attack; high_attack)
     "Squirtle",     //杰尼龟
     "Wartortle",    //卡咪龟
-    "Blastoise", //水箭龟(water_attack; high_blood)
-    "Diglett",  //地鼠
-    "Dugtrio",  //三地鼠
-    "Snorlax",   //卡比兽(defense_attack; high_defense)
-    "Dodrio",   //嘟嘟利
-    "Duduo",     //嘟嘟
-    "Pikachu",  //皮卡丘(double_attack; high_speed)
+    "Blastoise",    //水箭龟(water_attack; high_blood)
+    "Diglett",      //地鼠
+    "Dugtrio",      //三地鼠
+    "Snorlax",      //卡比兽(defense_attack; high_defense)
+    "Dodrio",       //嘟嘟利
+    "Duduo",        //嘟嘟
+    "Pikachu",      //皮卡丘(double_attack; high_speed)
 };
 
 
 const QList<QString> KINDNAME={"HIGH ATTACK","HIGH BLOOD","HIGH DEFENSE","HIGH SPEED"};//类型名称
-const QList<QString> ATTACKKIND={
+
+const QList<QString> ATTACKKIND={ //特殊技能名称
     "fire_attack",
-//    "light_attack",
     "water_attack",
     "defense_attack",
     "double_attack",
@@ -100,7 +93,7 @@ protected:
 public:
     Pokemon(){};
     virtual unsigned int Attack(){return 0;}    //每种精灵攻击方法不一样，为虚函数，需重写
-    void experienceUp(unsigned int value);
+    void experienceUp(unsigned int value);      //增加精灵经验值
     QString getName(){return name;}
     QString getSkill(){return ATTACKKIND[skill];}
     unsigned int getLevel(){return level;};

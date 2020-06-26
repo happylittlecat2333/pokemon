@@ -6,35 +6,31 @@ User::User()
     allPkmAttr.clear();
 }
 
+
 User::~User()
 {
-    qDebug() << "deleting User";
-    while(!allPkmAttr.empty()){
+    while(!allPkmAttr.empty())
         delete allPkmAttr.takeFirst();
-    }
 }
 
-void User::setUser(QDataStream &dsIn){  //设置用户的pokemon信息，每次append一个pokemon
-//    while(!dsIn.atEnd()){
-        Pkm *tmp = new Pkm;
-        dsIn >> tmp->name;
-//        qDebug() << tmp->name;
-        dsIn >> tmp->level;
-//        qDebug() << tmp->level;
-        dsIn >> tmp->experience;
-        dsIn >> tmp->attack;
-//        qDebug() << tmp->attack;
-        dsIn >> tmp->blood;
-        dsIn >> tmp->defense;
-        dsIn >> tmp->speed;
-        dsIn >> tmp->kind;
-        dsIn >> tmp->skill;
-//        qDebug() << "setUser";
-        allPkmAttr.append(tmp);
-//    }
+
+void User::setUser(QDataStream &dsIn)  //设置用户的pokemon信息，每次append一个pokemon
+{
+    Pkm *tmp = new Pkm;
+    dsIn >> tmp->name;
+    dsIn >> tmp->level;
+    dsIn >> tmp->experience;
+    dsIn >> tmp->attack;
+    dsIn >> tmp->blood;
+    dsIn >> tmp->defense;
+    dsIn >> tmp->speed;
+    dsIn >> tmp->kind;
+    dsIn >> tmp->skill;
+    allPkmAttr.append(tmp);
 }
 
-void User::sendAllPkmAttr(QDataStream &dsOut)
+
+void User::sendAllPkmAttr(QDataStream &dsOut)   //???好像没有用到这个函数
 {
     dsOut << this->username;
     dsOut << this->win;

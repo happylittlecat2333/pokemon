@@ -2,8 +2,9 @@
 
 high_defense::high_defense(SKILL skill)
 {
-    qsrand(QTime(0,0,0,0).msecsTo((QTime::currentTime()))); //生成随机种子
-    unsigned int p = qrand() % 3;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 rand_num(seed);	 // 大随机数
+    unsigned int p = rand_num() % 3;
     this->skill = skill;
     this->name = POKEMONNAME[skill * 3 + p] ;
     this->kind = HIGH_DEFENSE;
@@ -13,12 +14,14 @@ high_defense::high_defense(SKILL skill)
     defense = 25;
     speed = 10;
 
-    defense += 5;
+    defense += 5;   //特殊加成
 }
 
-unsigned int high_defense::Attack(){ //根据概率决定是普通攻击(normal_attack)，还是释放技能
-    qsrand(QTime(0,0,0,0).msecsTo((QTime::currentTime()))); //生成随机种子
-    unsigned int p = qrand() % 5;
+unsigned int high_defense::Attack() //根据概率决定是普通攻击(normal_attack)，还是释放技能
+{
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 rand_num(seed);	 // 大随机数
+    unsigned int p = rand_num() % 5;
     if(p < 4)
         return normal_attack;
     else
