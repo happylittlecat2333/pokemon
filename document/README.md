@@ -4,16 +4,16 @@
 
 - sign_up
   - NAME_EXIST
-  - SIGN_UP_SUCCESS {pokemon_name attr}     (sendPokemon)
+  - SIGN_UP_SUCCESS win lose {pokemon_name attr}     (sendPokemon)
 - sign_in
   - USER_NONE
   - PWD_ERROR
-  - SIGN_IN_SUCCESS {pokemon_name attr}
+  - SIGN_IN_SUCCESS win lose pokemon_num {pokemon_name attr}
 - sign_out
 - all_user
-  - {user_name {pokemon_name attr}}  (sendAllUser)
+  - {user_name win lose pokemon_num {pokemon_name attr}}  (sendAllUser)
 - online_user
-  - {user_name {pokemon_name attr}}  (sendOnlineUser)
+  - {user_name win lose pokemon_num {pokemon_name attr}}  (sendOnlineUser)
 - virtual_pkm
   - {pokemon_name attr} (sendPokmeon("admin"))
 - pkm_data
@@ -28,7 +28,7 @@ all first: log_type, username
 - ALL_USER: port
 - ONLINE_USER: port
 - VIRTUAL_PKM: port
-- PKM_DATA: port {pokemon_name attr}
+- PKM_DATA: port username win lose {pokemon_name attr}
   
 ## QUESTION
 
